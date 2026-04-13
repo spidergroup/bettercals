@@ -39,3 +39,9 @@ build/
 
 # Vite
 # (already covered by dist/)
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
