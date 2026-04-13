@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Bell, Home, Landmark, ChevronUp, Download, LayoutDashboard, Calculator, Wallet, User, Menu, X } from 'lucide-react';
+import { Bell, Home, Landmark, ChevronUp, Download, LayoutDashboard, Calculator, Wallet, User, Menu, X, RotateCcw } from 'lucide-react';
 
 function SliderInput({ label, value, onChange, min, max, step = 1, prefix, suffix, widthClass = "w-40" }: any) {
     const [inputValue, setInputValue] = useState(value.toLocaleString());
@@ -136,7 +136,7 @@ const DonutChart = ({ principal, principalAndInterest, taxesAndFees }: any) => {
 
 export default function App() {
     const [homePrice, setHomePrice] = useState(500000);
-    const [downPayment, setDownPayment] = useState(90000);
+    const [downPayment, setDownPayment] = useState(100000);
     const [loanTerm, setLoanTerm] = useState(30);
     const [interestRate, setInterestRate] = useState(5.0);
 
@@ -146,6 +146,18 @@ export default function App() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [showAllPayments, setShowAllPayments] = useState(false);
     const [extraPayments, setExtraPayments] = useState<{ [key: number]: number }>({});
+    
+    const handleReset = () => {
+        setHomePrice(500000);
+        setDownPayment(100000);
+        setLoanTerm(30);
+        setInterestRate(5.0);
+        setPropertyTax(0);
+        setInsurance(0);
+        setHoaFees(0);
+        setExtraPayments({});
+        setShowAllPayments(false);
+    };
 
     const principal = Math.max(0, homePrice - downPayment);
     const monthlyInterestRate = interestRate / 100 / 12;
@@ -276,9 +288,18 @@ export default function App() {
                     <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
                         <div className="xl:col-span-7 space-y-4">
                             <section className="space-y-4 bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-2xl">
-                                <div className="flex items-center gap-2 text-emerald-400 font-headline font-bold mb-2">
-                                    <Home className="w-5 h-5" />
-                                    <span className="text-lg">Core Loan Details</span>
+                                <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center gap-2 text-emerald-400 font-headline font-bold">
+                                        <Home className="w-5 h-5" />
+                                        <span className="text-lg">Core Loan Details</span>
+                                    </div>
+                                    <button 
+                                        onClick={handleReset}
+                                        className="flex items-center gap-1.5 text-xs font-black text-slate-500 hover:text-emerald-400 transition-colors uppercase tracking-widest bg-slate-950/50 px-3 py-1 rounded-lg border border-slate-800 hover:border-emerald-400/30"
+                                    >
+                                        <RotateCcw className="w-3 h-3" />
+                                        Reset
+                                    </button>
                                 </div>
 
                                 <SliderInput
@@ -294,10 +315,10 @@ export default function App() {
                                 <SliderInput
                                     label={`Down Payment (${downPaymentPercentage}%)`}
                                     value={downPayment}
-                                    onChange={setDownPayment}
+                                    onChange={(val: number) => setDownPayment(Math.round(val))}
                                     min={0}
                                     max={homePrice}
-                                    step={1000}
+                                    step={homePrice * 0.01}
                                     prefix="$"
                                 />
 
@@ -328,12 +349,12 @@ export default function App() {
                             <section className="space-y-4 bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-2xl">
                                 <div className="flex items-center gap-2 text-slate-300 font-headline font-bold mb-2">
                                     <Landmark className="w-5 h-5" />
-                                    <span className="text-lg">Recurring Expenses</span>
+                                    <span className="text-lg">Monthly Recurring Expenses</span>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <RecurringExpenseInput label="Property Tax" value={propertyTax} onChange={setPropertyTax} min={0} max={2000} />
-                                    <RecurringExpenseInput label="Insurance" value={insurance} onChange={setInsurance} min={0} max={1000} />
-                                    <RecurringExpenseInput label="HOA Fees" value={hoaFees} onChange={setHoaFees} min={0} max={1000} />
+                                    <RecurringExpenseInput label="Property Tax" value={propertyTax} onChange={setPropertyTax} min={0} max={Math.floor((homePrice * 0.03) / 12)} />
+                                    <RecurringExpenseInput label="Insurance" value={insurance} onChange={setInsurance} min={0} max={Math.floor((homePrice * 0.03) / 12)} />
+                                    <RecurringExpenseInput label="HOA Fees" value={hoaFees} onChange={setHoaFees} min={0} max={Math.floor((homePrice * 0.03) / 12)} />
                                 </div>
                             </section>
                         </div>
