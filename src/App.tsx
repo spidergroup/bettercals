@@ -134,6 +134,37 @@ const DonutChart = ({ principal, principalAndInterest, taxesAndFees }: any) => {
     );
 }
 
+const TotalCostDonutChart = ({ principal, totalInterest }: { principal: number, totalInterest: number }) => {
+    const total = principal + totalInterest;
+    const radius = 45;
+    const circumference = 2 * Math.PI * radius;
+    const piPercentage = total > 0 ? (principal / total) : 0;
+    const strokeDasharray = `${piPercentage * circumference} ${circumference}`;
+
+    return (
+        <div className="relative w-56 h-56 mx-auto my-6">
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-xs font-black text-slate-500 uppercase">Total Cost</span>
+                <span className="text-lg font-black text-white">${total.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+            </div>
+            <svg className="transform -rotate-90 w-full h-full" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" fill="transparent" r={radius} stroke="#f43f5e" strokeWidth="8"></circle>
+                <circle
+                    cx="50"
+                    cy="50"
+                    fill="transparent"
+                    r={radius}
+                    stroke="#34d399"
+                    strokeDasharray={strokeDasharray}
+                    strokeLinecap="round"
+                    strokeWidth="8"
+                    className="transition-all duration-500 ease-out"
+                ></circle>
+            </svg>
+        </div>
+    );
+}
+
 export default function App() {
     const [homePrice, setHomePrice] = useState(500000);
     const [downPayment, setDownPayment] = useState(100000);
@@ -233,6 +264,10 @@ export default function App() {
 
     const downPaymentPercentage = homePrice > 0 ? ((downPayment / homePrice) * 100).toFixed(0) : 0;
     const [dollars, cents] = formatCurrencyWithCents(totalMonthlyPayment).split('.');
+
+    const lastScheduleItem = amortizationSchedule[amortizationSchedule.length - 1];
+    const totalInterestPaid = lastScheduleItem ? lastScheduleItem.totalInterest : 0;
+    const totalPrincipalPaid = lastScheduleItem ? lastScheduleItem.totalPrincipal : 0;
 
     return (
         <div className="bg-slate-950 text-slate-100 min-h-screen font-body pb-20 md:pb-0">
@@ -360,8 +395,9 @@ export default function App() {
                         </div>
 
                         <div className="xl:col-span-5">
-                            <div className="sticky top-[80px] bg-slate-900 p-8 rounded-2xl shadow-2xl border border-slate-800 ring-1 ring-slate-800 h-full flex flex-col justify-center">
-                                <div className="text-center mb-6">
+                            <div className="sticky top-[80px] space-y-6">
+                                <div className="bg-slate-900 p-8 rounded-2xl shadow-2xl border border-slate-800 ring-1 ring-slate-800 flex flex-col justify-center">
+                                    <div className="text-center mb-6">
                                     <span className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-1 block">Monthly Payment</span>
                                     <div className="text-5xl font-extrabold text-emerald-400 font-headline tracking-tighter mb-1">
                                         {dollars}<span className="text-2xl opacity-60">.{cents}</span>
@@ -387,8 +423,36 @@ export default function App() {
                                         <span className="font-black text-base text-slate-400">{formatCurrencyWithCents(monthlyTaxesAndFees)}</span>
                                     </div>
                                 </div>
+                                </div>
 
+                                <div className="bg-slate-900 p-8 rounded-2xl shadow-2xl border border-slate-800 ring-1 ring-slate-800 flex flex-col justify-center">
+                                    <div className="text-center mb-6">
+                                        <span className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-1 block">Lifetime Loan Cost</span>
+                                        <div className="text-3xl font-extrabold text-white font-headline tracking-tighter mb-1">
+                                            {formatCurrencyWithCents(totalPrincipalPaid + totalInterestPaid)}
+                                        </div>
+                                        <p className="text-slate-400 text-xs font-bold">Total over {loanTerm} years at {interestRate}%</p>
+                                    </div>
 
+                                    <TotalCostDonutChart principal={totalPrincipalPaid} totalInterest={totalInterestPaid} />
+
+                                    <div className="space-y-2">
+                                        <div className="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-4 h-4 rounded-full bg-emerald-400"></div>
+                                                <span className="text-sm font-bold text-slate-200">Total Principal</span>
+                                            </div>
+                                            <span className="font-black text-base text-emerald-400">{formatCurrencyWithCents(totalPrincipalPaid)}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-4 h-4 rounded-full bg-rose-500"></div>
+                                                <span className="text-sm font-bold text-slate-200">Total Interest</span>
+                                            </div>
+                                            <span className="font-black text-base text-rose-500">{formatCurrencyWithCents(totalInterestPaid)}</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
