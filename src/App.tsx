@@ -243,6 +243,46 @@ const AmortizationTable = ({ schedule, extraPayments, setExtraPayments, showAll,
     );
 };
 
+const FAQItem = ({ question, answer }: { question: string, answer: React.ReactNode }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    return (
+        <div className="border border-[var(--border-main)] rounded-xl bg-[var(--bg-card)] overflow-hidden mb-3">
+            <button 
+                onClick={() => setIsOpen(!isOpen)} 
+                className="w-full px-5 py-4 flex justify-between items-center text-left hover:bg-[var(--accent)]/5 transition-colors focus:outline-none group"
+            >
+                <span className="font-headline font-bold text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors">{question}</span>
+                <ChevronUp className={`w-5 h-5 text-[var(--text-muted)] transition-transform duration-300 ${isOpen ? '' : 'rotate-180'}`} />
+            </button>
+            <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                <div className="px-5 pb-4 text-sm font-medium text-[var(--text-muted)] border-t border-[var(--border-main)]/50 pt-4">
+                    {answer}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+function usePersistentState<T>(key: string, defaultValue: T): [T, React.Dispatch<React.SetStateAction<T>>] {
+    const [state, setState] = useState<T>(() => {
+        const saved = localStorage.getItem(key);
+        if (saved !== null) {
+            try {
+                return JSON.parse(saved);
+            } catch (e) {
+                return defaultValue;
+            }
+        }
+        return defaultValue;
+    });
+
+    React.useEffect(() => {
+        localStorage.setItem(key, JSON.stringify(state));
+    }, [key, state]);
+
+    return [state, setState];
+}
+
 export default function App() {
     const [theme, setTheme] = useState(() => {
         const saved = localStorage.getItem('theme');
@@ -259,6 +299,8 @@ export default function App() {
         }
         localStorage.setItem('theme', theme);
     }, [theme]);
+
+    const [activeTab, setActiveTab] = usePersistentState<'mortgage' | 'auto'>('bc_activeTab', 'mortgage');
 
     React.useEffect(() => {
         let title = "";
@@ -289,31 +331,29 @@ export default function App() {
 
     const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
 
-    const [activeTab, setActiveTab] = useState<'mortgage' | 'auto'>('mortgage');
+    const [homePrice, setHomePrice] = usePersistentState('bc_homePrice', 500000);
+    const [downPayment, setDownPayment] = usePersistentState('bc_downPayment', 100000);
+    const [loanTerm, setLoanTerm] = usePersistentState('bc_loanTerm', 30);
+    const [interestRate, setInterestRate] = usePersistentState('bc_interestRate', 5.0);
 
-    const [homePrice, setHomePrice] = useState(500000);
-    const [downPayment, setDownPayment] = useState(100000);
-    const [loanTerm, setLoanTerm] = useState(30);
-    const [interestRate, setInterestRate] = useState(5.0);
-
-    const [propertyTax, setPropertyTax] = useState(0);
-    const [insurance, setInsurance] = useState(0);
-    const [hoaFees, setHoaFees] = useState(0);
+    const [propertyTax, setPropertyTax] = usePersistentState('bc_propertyTax', 0);
+    const [insurance, setInsurance] = usePersistentState('bc_insurance', 0);
+    const [hoaFees, setHoaFees] = usePersistentState('bc_hoaFees', 0);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [showAllPayments, setShowAllPayments] = useState(false);
-    const [extraPayments, setExtraPayments] = useState<{ [key: number]: number }>({});
+    const [extraPayments, setExtraPayments] = usePersistentState<{ [key: number]: number }>('bc_extraPayments', {});
     
     // Auto Loan States
-    const [autoPrice, setAutoPrice] = useState(40000);
-    const [autoDownPayment, setAutoDownPayment] = useState(8000);
-    const [autoLoanTerm, setAutoLoanTerm] = useState(60);
-    const [autoInterestRate, setAutoInterestRate] = useState(5.0);
-    const [autoTradeInValue, setAutoTradeInValue] = useState(0);
-    const [autoAmountOwed, setAutoAmountOwed] = useState(0);
-    const [autoSalesTax, setAutoSalesTax] = useState(7.0);
-    const [autoRegistrationFees, setAutoRegistrationFees] = useState(2000);
-    const [autoInsurance, setAutoInsurance] = useState(150);
-    const [autoExtraPayments, setAutoExtraPayments] = useState<{ [key: number]: number }>({});
+    const [autoPrice, setAutoPrice] = usePersistentState('bc_autoPrice', 48000);
+    const [autoDownPayment, setAutoDownPayment] = usePersistentState('bc_autoDownPayment', 6200);
+    const [autoLoanTerm, setAutoLoanTerm] = usePersistentState('bc_autoLoanTerm', 72);
+    const [autoInterestRate, setAutoInterestRate] = usePersistentState('bc_autoInterestRate', 7.0);
+    const [autoTradeInValue, setAutoTradeInValue] = usePersistentState('bc_autoTradeInValue', 0);
+    const [autoAmountOwed, setAutoAmountOwed] = usePersistentState('bc_autoAmountOwed', 0);
+    const [autoSalesTax, setAutoSalesTax] = usePersistentState('bc_autoSalesTax', 5.0);
+    const [autoRegistrationFees, setAutoRegistrationFees] = usePersistentState('bc_autoRegistrationFees', 300);
+    const [autoInsurance, setAutoInsurance] = usePersistentState('bc_autoInsurance', 200);
+    const [autoExtraPayments, setAutoExtraPayments] = usePersistentState<{ [key: number]: number }>('bc_autoExtraPayments', {});
     const [showAllAutoPayments, setShowAllAutoPayments] = useState(false);
 
     const handleReset = () => {
@@ -329,15 +369,15 @@ export default function App() {
     };
 
     const handleAutoReset = () => {
-        setAutoPrice(40000);
-        setAutoDownPayment(8000);
-        setAutoLoanTerm(60);
-        setAutoInterestRate(5.0);
+        setAutoPrice(48000);
+        setAutoDownPayment(6200);
+        setAutoLoanTerm(72);
+        setAutoInterestRate(7.0);
         setAutoTradeInValue(0);
         setAutoAmountOwed(0);
-        setAutoSalesTax(7.0);
-        setAutoRegistrationFees(2000);
-        setAutoInsurance(150);
+        setAutoSalesTax(5.0);
+        setAutoRegistrationFees(300);
+        setAutoInsurance(200);
         setAutoExtraPayments({});
         setShowAllAutoPayments(false);
     };
@@ -563,7 +603,7 @@ export default function App() {
                                 </div>
                                 <button 
                                     onClick={handleReset}
-                                    className="flex items-center gap-1.5 text-xs font-black text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors uppercase tracking-widest bg-[var(--bg-input)] px-3 py-1 rounded-lg border border-[var(--border-main)] hover:border-[var(--accent)]/30"
+                                    className="flex items-center gap-1.5 text-xs font-black text-[#f5a669] hover:bg-[#f5a669] hover:text-white transition-all uppercase tracking-widest bg-[var(--bg-input)] px-3 py-1 rounded-lg border border-[var(--border-main)] hover:border-[#f5a669]"
                                 >
                                     <RotateCcw className="w-3 h-3" />
                                     Reset
@@ -695,6 +735,22 @@ export default function App() {
                             formatMonthYear={formatMonthYear}
                             formatCurrencyWithCents={formatCurrencyWithCents}
                         />
+
+                        <div className="mt-12 mb-8 max-w-3xl mx-auto w-full">
+                            <h3 className="text-xl font-black font-headline text-[var(--text-main)] mb-6 text-center">Frequently Asked Questions</h3>
+                            <FAQItem 
+                                question="How do I use this mortgage calculator?" 
+                                answer="Simply adjust the Home Price, Down Payment, Loan Term, and Interest Rate using the sliders. The calculator automatically estimates your monthly principal and interest. You can also add property taxes, insurance, and HOA fees for a more accurate total monthly commitment."
+                            />
+                            <FAQItem 
+                                question="What is an amortization schedule?" 
+                                answer="An amortization schedule is a complete table of periodic loan payments, showing the amount of principal and the amount of interest that comprise each payment until the loan is paid off at the end of its term."
+                            />
+                            <FAQItem 
+                                question="How do extra payments work?" 
+                                answer="Entering a value in the 'Extra' column applies that amount directly to your principal balance for that specific month. This reduces the total interest you will pay over the life of the loan and can help you pay off your mortgage months or even years earlier."
+                            />
+                        </div>
                     </>
                     )}
 
@@ -709,7 +765,7 @@ export default function App() {
                                         </div>
                                         <button 
                                             onClick={handleAutoReset}
-                                            className="flex items-center gap-1.5 text-xs font-black text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors uppercase tracking-widest bg-[var(--bg-input)] px-3 py-1 rounded-lg border border-[var(--border-main)] hover:border-[var(--accent)]/30"
+                                            className="flex items-center gap-1.5 text-xs font-black text-[#f5a669] hover:bg-[#f5a669] hover:text-white transition-all uppercase tracking-widest bg-[var(--bg-input)] px-3 py-1 rounded-lg border border-[var(--border-main)] hover:border-[#f5a669]"
                                         >
                                             <RotateCcw className="w-3 h-3" />
                                             Reset
@@ -809,9 +865,34 @@ export default function App() {
                                 formatMonthYear={formatMonthYear}
                                 formatCurrencyWithCents={formatCurrencyWithCents}
                             />
+
+                            <div className="mt-12 mb-8 max-w-3xl mx-auto w-full">
+                                <h3 className="text-xl font-black font-headline text-[var(--text-main)] mb-6 text-center">Frequently Asked Questions</h3>
+                                <FAQItem 
+                                    question="How do I use the auto loan calculator?" 
+                                    answer="Enter the vehicle price and adjust your down payment. You can also input your trade-in value, how much you still owe on it, and local sales tax and registration fees. The calculator instantly shows your estimated monthly car payment."
+                                />
+                                <FAQItem 
+                                    question="How does my trade-in affect the loan?" 
+                                    answer="If your trade-in is worth more than you owe on it, the difference (trade-in equity) is applied as a credit towards your new vehicle. This reduces the total amount you need to borrow and can lower your sales tax in many states."
+                                />
+                                <FAQItem 
+                                    question="Should I include insurance in my calculation?" 
+                                    answer="While insurance is not part of the auto loan itself, it is a required monthly cost of owning a vehicle. Including an estimate helps you understand the true monthly commitment of your purchase."
+                                />
+                            </div>
                         </>
                     )}
                 </main>
+
+                <footer className="w-full mt-12 py-8 border-t border-[var(--border-main)] text-center text-xs text-[var(--text-muted)] font-medium">
+                    <div className="flex justify-center gap-6 mb-4">
+                        <a href="/privacy" className="hover:text-[var(--accent)] transition-colors">Privacy Policy</a>
+                        <a href="/terms" className="hover:text-[var(--accent)] transition-colors">Terms of Service</a>
+                        <a href="/contact" className="hover:text-[var(--accent)] transition-colors">Contact Us</a>
+                    </div>
+                    <p>&copy; {new Date().getFullYear()} Better Calculators. All rights reserved.</p>
+                </footer>
             </div>
 
             <nav className="md:hidden fixed bottom-0 left-0 w-full bg-[var(--bg-card)] border-t border-[var(--border-main)] flex justify-around p-3 z-50 shadow-lg">
