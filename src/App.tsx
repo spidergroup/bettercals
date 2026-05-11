@@ -249,8 +249,8 @@ const FAQItem = ({ question, answer }: { question: string, answer: React.ReactNo
     const [isOpen, setIsOpen] = useState(false);
     return (
         <div className="border border-[var(--border-main)] rounded-xl bg-[var(--bg-card)] overflow-hidden mb-3">
-            <button 
-                onClick={() => setIsOpen(!isOpen)} 
+            <button
+                onClick={() => setIsOpen(!isOpen)}
                 className="w-full px-5 py-4 flex justify-between items-center text-left hover:bg-[var(--accent)]/5 transition-colors focus:outline-none group"
             >
                 <span className="font-headline font-bold text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors">{question}</span>
@@ -324,7 +324,7 @@ export default function App() {
         }
 
         document.title = title;
-        
+
         const updateMeta = (selector: string, content: string) => {
             const el = document.querySelector(selector);
             if (el) el.setAttribute('content', content);
@@ -351,7 +351,7 @@ export default function App() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [showAllPayments, setShowAllPayments] = useState(false);
     const [extraPayments, setExtraPayments] = usePersistentState<{ [key: number]: number }>('bc_extraPayments', {});
-    
+
     // Auto Loan States
     const [autoPrice, setAutoPrice] = usePersistentState('bc_autoPrice', 48000);
     const [autoDownPayment, setAutoDownPayment] = usePersistentState('bc_autoDownPayment', 6200);
@@ -538,7 +538,7 @@ export default function App() {
     const [autoDollars, autoCents] = formatCurrencyWithCents(autoTotalMonthlyPayment).split('.');
 
     return (
-        <div className="bg-[var(--bg-main)] text-[var(--text-main)] min-h-screen font-body pb-20 md:pb-0 transition-colors duration-300">
+        <div className="bg-[var(--bg-main)] text-[var(--text-main)] min-h-screen font-body transition-colors duration-300">
             <header className="w-full top-0 sticky z-50 bg-[var(--bg-header)] backdrop-blur-md flex justify-between items-center px-8 py-3 border-b border-[var(--border-main)]">
                 <div className="flex items-center gap-8">
                     <a className="flex items-center gap-2 group transition-transform hover:scale-105 active:scale-95" href="/">
@@ -555,7 +555,7 @@ export default function App() {
                     </nav>
                 </div>
                 <div className="flex items-center gap-4">
-                    <button 
+                    <button
                         onClick={toggleTheme}
                         className="p-2 rounded-xl bg-[var(--bg-input)] border border-[var(--border-main)] text-[var(--text-muted)] hover:text-[var(--accent)] transition-all hover:scale-110 active:scale-95"
                         title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
@@ -596,308 +596,314 @@ export default function App() {
                         <TermsOfService />
                     ) : (
                         <>
-                    <div className="mb-6">
-                        <h1 className="sr-only">
-                            {activeTab === 'mortgage' ? 'Better Mortgage Calculator' : 'Better Auto Loan Calculator'}
-                        </h1>
-                        <p className="text-sm font-bold text-[var(--text-muted)] font-label">
-                            {activeTab === 'mortgage' 
-                                ? "Better Mortgage Calculator is an easy-to-use, smarter tool that lets you instantly see your estimated monthly mortgage payments—no input required. Get quick, accurate insights and plan your home financing with confidence in seconds."
-                                : "Estimate your monthly car payments instantly with the Better Auto Loan Calculator. Simply enter your vehicle price, trade-in value, and financing terms to calculate exactly how much you will pay each month and over the total life of your auto loan. Plan your next vehicle purchase with confidence."}
-                        </p>
-                    </div>
-
-                    {activeTab === 'mortgage' && (
-                        <>
-                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                        <section className="space-y-3 bg-[var(--bg-card)] p-5 rounded-2xl border border-[var(--border-main)] shadow-[var(--card-shadow)] flex flex-col justify-between">
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2 text-[var(--accent)] font-headline font-bold">
-                                    <Home className="w-5 h-5" />
-                                    <span className="text-lg">Core Loan Details</span>
-                                </div>
-                                <button 
-                                    onClick={handleReset}
-                                    className="flex items-center gap-1.5 text-xs font-black text-[#f5a669] hover:bg-[#f5a669] hover:text-white transition-all uppercase tracking-widest bg-[var(--bg-input)] px-3 py-1 rounded-lg border border-[var(--border-main)] hover:border-[#f5a669]"
-                                >
-                                    <RotateCcw className="w-3 h-3" />
-                                    Reset
-                                </button>
+                            <div className="mb-6">
+                                <h1 className="sr-only">
+                                    {activeTab === 'mortgage' ? 'Better Mortgage Calculator' : 'Better Auto Loan Calculator'}
+                                </h1>
+                                <p className="text-sm font-bold text-[var(--text-muted)] font-label">
+                                    {activeTab === 'mortgage' ? (
+                                        <>
+                                            <strong className="font-black text-[var(--text-main)]">Better Mortgage Calculator</strong> is an easy-to-use, smarter tool that lets you instantly see your estimated monthly mortgage payments—no input required. Get quick, accurate insights and plan your home financing with confidence in seconds.
+                                        </>
+                                    ) : (
+                                        <>
+                                            <strong className="font-black text-[var(--text-main)]">Better Auto Loan Calculator:</strong> Instantly estimate your monthly car loan payments and explore your auto financing options. Simply enter your vehicle price, down payment, trade-in value, and interest rate to calculate exactly how much you will pay each month and over the total life of your loan. Plan your next vehicle purchase with confidence and stay within your budget.
+                                        </>
+                                    )}
+                                </p>
                             </div>
 
-                            <SliderInput
-                                label="Home Price"
-                                value={homePrice}
-                                onChange={setHomePrice}
-                                min={100000}
-                                max={2000000}
-                                step={1000}
-                                prefix="$"
-                            />
-
-                            <SliderInput
-                                label={`Down Payment (${downPaymentPercentage}%)`}
-                                value={downPayment}
-                                onChange={(val: number) => setDownPayment(Math.round(val))}
-                                min={0}
-                                max={homePrice}
-                                step={homePrice * 0.01}
-                                prefix="$"
-                            />
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <SliderInput
-                                    label="Loan Term"
-                                    value={loanTerm}
-                                    onChange={setLoanTerm}
-                                    min={5}
-                                    max={30}
-                                    step={5}
-                                    suffix="Yrs"
-                                    widthClass="w-28"
-                                />
-                                <SliderInput
-                                    label="Interest Rate"
-                                    value={interestRate}
-                                    onChange={setInterestRate}
-                                    min={1}
-                                    max={15}
-                                    step={0.1}
-                                    suffix="%"
-                                    widthClass="w-28"
-                                />
-                            </div>
-                        </section>
-
-                        <section className="space-y-3 bg-[var(--bg-card)] p-5 rounded-2xl border border-[var(--border-main)] shadow-[var(--card-shadow)] flex flex-col">
-                            <div className="flex items-center gap-2 text-[var(--text-muted)] font-headline font-bold mb-2">
-                                <Landmark className="w-5 h-5" />
-                                <span className="text-lg">Monthly Recurring Expenses</span>
-                            </div>
-                            <div className="flex flex-col gap-4 flex-1 justify-around">
-                                <RecurringExpenseInput label="Property Tax" value={propertyTax} onChange={setPropertyTax} min={0} max={Math.floor((homePrice * 0.03) / 12)} />
-                                <RecurringExpenseInput label="Insurance" value={insurance} onChange={setInsurance} min={0} max={Math.floor((homePrice * 0.03) / 12)} />
-                                <RecurringExpenseInput label="HOA Fees" value={hoaFees} onChange={setHoaFees} min={0} max={Math.floor((homePrice * 0.03) / 12)} />
-                            </div>
-                        </section>
-
-                        <div className="bg-[var(--bg-card)] p-5 rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-main)] flex flex-col justify-between">
-                            <div className="text-center">
-                                <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] mb-1 block">Monthly Payment</span>
-                                <div className="text-4xl font-extrabold text-[var(--accent)] font-headline tracking-tighter">
-                                    {dollars}<span className="text-xl opacity-60">.{cents}</span>
-                                </div>
-                                <p className="text-[var(--text-muted)] text-[10px] font-bold">Total monthly commitment</p>
-                            </div>
-
-                            <DonutChart principal={principal} principalAndInterest={monthlyPrincipalAndInterest} taxesAndFees={monthlyTaxesAndFees} />
-
-                            <div className="space-y-1.5 mt-2">
-                                <div className="flex items-center justify-between p-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-main)]">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-3 h-3 rounded-full bg-[var(--accent)]"></div>
-                                        <span className="text-xs font-bold text-[var(--text-main)]">Principal & Interest</span>
-                                    </div>
-                                    <span className="font-black text-sm text-[var(--accent)]">{formatCurrencyWithCents(monthlyPrincipalAndInterest)}</span>
-                                </div>
-                                <div className="flex items-center justify-between p-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-main)]">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-3 h-3 rounded-full bg-[var(--text-muted)] opacity-50"></div>
-                                        <span className="text-xs font-bold text-[var(--text-main)]">Taxes & Fees</span>
-                                    </div>
-                                    <span className="font-black text-sm text-[var(--text-muted)]">{formatCurrencyWithCents(monthlyTaxesAndFees)}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="bg-[var(--bg-card)] p-5 rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-main)] flex flex-col justify-between">
-                            <div className="text-center">
-                                <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] mb-1 block">Lifetime Loan Cost</span>
-                                <div className="text-2xl font-extrabold text-[var(--text-main)] font-headline tracking-tighter">
-                                    {formatCurrencyWithCents(totalPrincipalPaid + totalInterestPaid)}
-                                </div>
-                                <p className="text-[var(--text-muted)] text-[10px] font-bold">Total over {loanTerm} years at {interestRate}%</p>
-                            </div>
-
-                            <TotalCostDonutChart principal={totalPrincipalPaid} totalInterest={totalInterestPaid} />
-
-                            <div className="space-y-1.5 mt-2">
-                                <div className="flex items-center justify-between p-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-main)]">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-3 h-3 rounded-full bg-[var(--accent)]"></div>
-                                        <span className="text-xs font-bold text-[var(--text-main)]">Total Principal</span>
-                                    </div>
-                                    <span className="font-black text-sm text-[var(--accent)]">{formatCurrencyWithCents(totalPrincipalPaid)}</span>
-                                </div>
-                                <div className="flex items-center justify-between p-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-main)]">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-3 h-3 rounded-full bg-rose-500"></div>
-                                        <span className="text-xs font-bold text-[var(--text-main)]">Total Interest</span>
-                                    </div>
-                                    <span className="font-black text-sm text-rose-500">{formatCurrencyWithCents(totalInterestPaid)}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                        <AmortizationTable 
-                            schedule={amortizationSchedule}
-                            extraPayments={extraPayments}
-                            setExtraPayments={setExtraPayments}
-                            showAll={showAllPayments}
-                            setShowAll={setShowAllPayments}
-                            numberOfPayments={numberOfPayments}
-                            formatMonthYear={formatMonthYear}
-                            formatCurrencyWithCents={formatCurrencyWithCents}
-                        />
-
-                        <div className="mt-12 mb-8 max-w-3xl mx-auto w-full">
-                            <h3 className="text-lg font-black font-headline text-[var(--text-main)] mb-6 text-center">Frequently Asked Questions</h3>
-                            <FAQItem 
-                                question="How do I use this mortgage calculator?" 
-                                answer="Simply adjust the Home Price, Down Payment, Loan Term, and Interest Rate using the sliders. The calculator automatically estimates your monthly principal and interest. You can also add property taxes, insurance, and HOA fees for a more accurate total monthly commitment."
-                            />
-                            <FAQItem 
-                                question="What is an amortization schedule?" 
-                                answer="An amortization schedule is a complete table of periodic loan payments, showing the amount of principal and the amount of interest that comprise each payment until the loan is paid off at the end of its term."
-                            />
-                            <FAQItem 
-                                question="How do extra payments work?" 
-                                answer="Entering a value in the 'Extra' column applies that amount directly to your principal balance for that specific month. This reduces the total interest you will pay over the life of the loan and can help you pay off your mortgage months or even years earlier."
-                            />
-                        </div>
-                    </>
-                    )}
-
-                    {activeTab === 'auto' && (
-                        <>
-                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                                <section className="space-y-3 bg-[var(--bg-card)] p-5 rounded-2xl border border-[var(--border-main)] shadow-[var(--card-shadow)] flex flex-col justify-between">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <div className="flex items-center gap-2 text-[var(--accent)] font-headline font-bold">
-                                            <Car className="w-5 h-5" />
-                                            <span className="text-lg">Core Loan Details</span>
-                                        </div>
-                                        <button 
-                                            onClick={handleAutoReset}
-                                            className="flex items-center gap-1.5 text-xs font-black text-[#f5a669] hover:bg-[#f5a669] hover:text-white transition-all uppercase tracking-widest bg-[var(--bg-input)] px-3 py-1 rounded-lg border border-[var(--border-main)] hover:border-[#f5a669]"
-                                        >
-                                            <RotateCcw className="w-3 h-3" />
-                                            Reset
-                                        </button>
-                                    </div>
-
-                                    <SliderInput label="Auto Price" value={autoPrice} onChange={setAutoPrice} min={1000} max={200000} step={500} prefix="$" />
-                                    <SliderInput label={`Down Payment (${autoPrice > 0 ? ((autoDownPayment / autoPrice) * 100).toFixed(1) : 0}%)`} value={autoDownPayment} onChange={(val: number) => setAutoDownPayment(Math.round(val))} min={0} max={autoPrice} step={100} prefix="$" />
-                                    
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <SliderInput label="Loan Term" value={autoLoanTerm} onChange={setAutoLoanTerm} min={12} max={96} step={12} suffix="Mos" widthClass="w-28" />
-                                        <SliderInput label="Interest Rate" value={autoInterestRate} onChange={setAutoInterestRate} min={1} max={20} step={0.1} suffix="%" widthClass="w-28" />
-                                    </div>
-                                </section>
-
-                                <section className="space-y-3 bg-[var(--bg-card)] p-5 rounded-2xl border border-[var(--border-main)] shadow-[var(--card-shadow)] flex flex-col">
-                                    <div className="flex items-center gap-2 text-[var(--text-muted)] font-headline font-bold mb-2">
-                                        <Wallet className="w-5 h-5" />
-                                        <span className="text-lg">Trade-in & Fees</span>
-                                    </div>
-                                    <div className="flex flex-col gap-4 flex-1 justify-around">
-                                        <SliderInput label="Trade-in Value" value={autoTradeInValue} onChange={setAutoTradeInValue} min={0} max={100000} step={500} prefix="$" />
-                                        <SliderInput label="Owed on Trade-in" value={autoAmountOwed} onChange={setAutoAmountOwed} min={0} max={100000} step={500} prefix="$" />
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <SliderInput label="Sales Tax" value={autoSalesTax} onChange={setAutoSalesTax} min={0} max={15} step={0.1} suffix="%" widthClass="w-24" />
-                                            <SliderInput label="Reg. Fees" value={autoRegistrationFees} onChange={setAutoRegistrationFees} min={0} max={5000} step={50} prefix="$" widthClass="w-24" />
-                                        </div>
-                                        <SliderInput label="Est. Monthly Insurance" value={autoInsurance} onChange={setAutoInsurance} min={0} max={1000} step={10} prefix="$" />
-                                    </div>
-                                </section>
-
-                                <div className="bg-[var(--bg-card)] p-5 rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-main)] flex flex-col justify-between">
-                                    <div className="text-center">
-                                        <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] mb-1 block">Monthly Payment</span>
-                                        <div className="text-4xl font-extrabold text-[var(--accent)] font-headline tracking-tighter">
-                                            {autoDollars}<span className="text-xl opacity-60">.{autoCents}</span>
-                                        </div>
-                                        <p className="text-[var(--text-muted)] text-[10px] font-bold">Total monthly commitment</p>
-                                    </div>
-
-                                    <DonutChart principal={autoPrincipal} principalAndInterest={autoMonthlyPrincipalAndInterest} taxesAndFees={autoInsurance} />
-
-                                    <div className="space-y-1.5 mt-2">
-                                        <div className="flex items-center justify-between p-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-main)]">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-3 h-3 rounded-full bg-[var(--accent)]"></div>
-                                                <span className="text-xs font-bold text-[var(--text-main)]">Principal & Interest</span>
+                            {activeTab === 'mortgage' && (
+                                <>
+                                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                                        <section className="space-y-3 bg-[var(--bg-card)] p-5 rounded-2xl border border-[var(--border-main)] shadow-[var(--card-shadow)] flex flex-col justify-between">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <div className="flex items-center gap-2 text-[var(--accent)] font-headline font-bold">
+                                                    <Home className="w-5 h-5" />
+                                                    <span className="text-lg">Core Loan Details</span>
+                                                </div>
+                                                <button
+                                                    onClick={handleReset}
+                                                    className="flex items-center gap-1.5 text-xs font-black text-[#f5a669] hover:bg-[#f5a669] hover:text-white transition-all uppercase tracking-widest bg-[var(--bg-input)] px-3 py-1 rounded-lg border border-[var(--border-main)] hover:border-[#f5a669]"
+                                                >
+                                                    <RotateCcw className="w-3 h-3" />
+                                                    Reset
+                                                </button>
                                             </div>
-                                            <span className="font-black text-sm text-[var(--accent)]">{formatCurrencyWithCents(autoMonthlyPrincipalAndInterest)}</span>
-                                        </div>
-                                        <div className="flex items-center justify-between p-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-main)]">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-3 h-3 rounded-full bg-[var(--text-muted)] opacity-50"></div>
-                                                <span className="text-xs font-bold text-[var(--text-main)]">Insurance</span>
+
+                                            <SliderInput
+                                                label="Home Price"
+                                                value={homePrice}
+                                                onChange={setHomePrice}
+                                                min={100000}
+                                                max={2000000}
+                                                step={1000}
+                                                prefix="$"
+                                            />
+
+                                            <SliderInput
+                                                label={`Down Payment (${downPaymentPercentage}%)`}
+                                                value={downPayment}
+                                                onChange={(val: number) => setDownPayment(Math.round(val))}
+                                                min={0}
+                                                max={homePrice}
+                                                step={homePrice * 0.01}
+                                                prefix="$"
+                                            />
+
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <SliderInput
+                                                    label="Loan Term"
+                                                    value={loanTerm}
+                                                    onChange={setLoanTerm}
+                                                    min={5}
+                                                    max={30}
+                                                    step={5}
+                                                    suffix="Yrs"
+                                                    widthClass="w-28"
+                                                />
+                                                <SliderInput
+                                                    label="Interest Rate"
+                                                    value={interestRate}
+                                                    onChange={setInterestRate}
+                                                    min={1}
+                                                    max={15}
+                                                    step={0.1}
+                                                    suffix="%"
+                                                    widthClass="w-28"
+                                                />
                                             </div>
-                                            <span className="font-black text-sm text-[var(--text-muted)]">{formatCurrencyWithCents(autoInsurance)}</span>
+                                        </section>
+
+                                        <section className="space-y-3 bg-[var(--bg-card)] p-5 rounded-2xl border border-[var(--border-main)] shadow-[var(--card-shadow)] flex flex-col">
+                                            <div className="flex items-center gap-2 text-[var(--text-muted)] font-headline font-bold mb-2">
+                                                <Landmark className="w-5 h-5" />
+                                                <span className="text-lg">Monthly Recurring Expenses</span>
+                                            </div>
+                                            <div className="flex flex-col gap-4 flex-1 justify-around">
+                                                <RecurringExpenseInput label="Property Tax" value={propertyTax} onChange={setPropertyTax} min={0} max={Math.floor((homePrice * 0.03) / 12)} />
+                                                <RecurringExpenseInput label="Insurance" value={insurance} onChange={setInsurance} min={0} max={Math.floor((homePrice * 0.03) / 12)} />
+                                                <RecurringExpenseInput label="HOA Fees" value={hoaFees} onChange={setHoaFees} min={0} max={Math.floor((homePrice * 0.03) / 12)} />
+                                            </div>
+                                        </section>
+
+                                        <div className="bg-[var(--bg-card)] p-5 rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-main)] flex flex-col justify-between">
+                                            <div className="text-center">
+                                                <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] mb-1 block">Monthly Payment</span>
+                                                <div className="text-4xl font-extrabold text-[var(--accent)] font-headline tracking-tighter">
+                                                    {dollars}<span className="text-xl opacity-60">.{cents}</span>
+                                                </div>
+                                                <p className="text-[var(--text-muted)] text-[10px] font-bold">Total monthly commitment</p>
+                                            </div>
+
+                                            <DonutChart principal={principal} principalAndInterest={monthlyPrincipalAndInterest} taxesAndFees={monthlyTaxesAndFees} />
+
+                                            <div className="space-y-1.5 mt-2">
+                                                <div className="flex items-center justify-between p-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-main)]">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-3 h-3 rounded-full bg-[var(--accent)]"></div>
+                                                        <span className="text-xs font-bold text-[var(--text-main)]">Principal & Interest</span>
+                                                    </div>
+                                                    <span className="font-black text-sm text-[var(--accent)]">{formatCurrencyWithCents(monthlyPrincipalAndInterest)}</span>
+                                                </div>
+                                                <div className="flex items-center justify-between p-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-main)]">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-3 h-3 rounded-full bg-[var(--text-muted)] opacity-50"></div>
+                                                        <span className="text-xs font-bold text-[var(--text-main)]">Taxes & Fees</span>
+                                                    </div>
+                                                    <span className="font-black text-sm text-[var(--text-muted)]">{formatCurrencyWithCents(monthlyTaxesAndFees)}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-[var(--bg-card)] p-5 rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-main)] flex flex-col justify-between">
+                                            <div className="text-center">
+                                                <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] mb-1 block">Lifetime Loan Cost</span>
+                                                <div className="text-2xl font-extrabold text-[var(--text-main)] font-headline tracking-tighter">
+                                                    {formatCurrencyWithCents(totalPrincipalPaid + totalInterestPaid)}
+                                                </div>
+                                                <p className="text-[var(--text-muted)] text-[10px] font-bold">Total over {loanTerm} years at {interestRate}%</p>
+                                            </div>
+
+                                            <TotalCostDonutChart principal={totalPrincipalPaid} totalInterest={totalInterestPaid} />
+
+                                            <div className="space-y-1.5 mt-2">
+                                                <div className="flex items-center justify-between p-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-main)]">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-3 h-3 rounded-full bg-[var(--accent)]"></div>
+                                                        <span className="text-xs font-bold text-[var(--text-main)]">Total Principal</span>
+                                                    </div>
+                                                    <span className="font-black text-sm text-[var(--accent)]">{formatCurrencyWithCents(totalPrincipalPaid)}</span>
+                                                </div>
+                                                <div className="flex items-center justify-between p-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-main)]">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-3 h-3 rounded-full bg-rose-500"></div>
+                                                        <span className="text-xs font-bold text-[var(--text-main)]">Total Interest</span>
+                                                    </div>
+                                                    <span className="font-black text-sm text-rose-500">{formatCurrencyWithCents(totalInterestPaid)}</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div className="bg-[var(--bg-card)] p-5 rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-main)] flex flex-col justify-between">
-                                    <div className="text-center">
-                                        <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] mb-1 block">Lifetime Cost</span>
-                                        <div className="text-2xl font-extrabold text-[var(--text-main)] font-headline tracking-tighter">
-                                            {formatCurrencyWithCents(autoTotalPrincipalPaid + autoTotalInterestPaid)}
-                                        </div>
-                                        <p className="text-[var(--text-muted)] text-[10px] font-bold">Total over {autoLoanTerm} months at {autoInterestRate}%</p>
+                                    <AmortizationTable
+                                        schedule={amortizationSchedule}
+                                        extraPayments={extraPayments}
+                                        setExtraPayments={setExtraPayments}
+                                        showAll={showAllPayments}
+                                        setShowAll={setShowAllPayments}
+                                        numberOfPayments={numberOfPayments}
+                                        formatMonthYear={formatMonthYear}
+                                        formatCurrencyWithCents={formatCurrencyWithCents}
+                                    />
+
+                                    <div className="mt-12 mb-8 max-w-3xl mx-auto w-full">
+                                        <h3 className="text-lg font-black font-headline text-[var(--text-main)] mb-6 text-center">Frequently Asked Questions</h3>
+                                        <FAQItem
+                                            question="How do I use this mortgage calculator?"
+                                            answer="Simply adjust the Home Price, Down Payment, Loan Term, and Interest Rate using the sliders. The calculator automatically estimates your monthly principal and interest. You can also add property taxes, insurance, and HOA fees for a more accurate total monthly commitment."
+                                        />
+                                        <FAQItem
+                                            question="What is an amortization schedule?"
+                                            answer="An amortization schedule is a complete table of periodic loan payments, showing the amount of principal and the amount of interest that comprise each payment until the loan is paid off at the end of its term."
+                                        />
+                                        <FAQItem
+                                            question="How do extra payments work?"
+                                            answer="Entering a value in the 'Extra' column applies that amount directly to your principal balance for that specific month. This reduces the total interest you will pay over the life of the loan and can help you pay off your mortgage months or even years earlier."
+                                        />
                                     </div>
+                                </>
+                            )}
 
-                                    <TotalCostDonutChart principal={autoTotalPrincipalPaid} totalInterest={autoTotalInterestPaid} />
-
-                                    <div className="space-y-1.5 mt-2">
-                                        <div className="flex items-center justify-between p-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-main)]">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-3 h-3 rounded-full bg-[var(--accent)]"></div>
-                                                <span className="text-xs font-bold text-[var(--text-main)]">Total Principal</span>
+                            {activeTab === 'auto' && (
+                                <>
+                                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                                        <section className="space-y-3 bg-[var(--bg-card)] p-5 rounded-2xl border border-[var(--border-main)] shadow-[var(--card-shadow)] flex flex-col justify-between">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <div className="flex items-center gap-2 text-[var(--accent)] font-headline font-bold">
+                                                    <Car className="w-5 h-5" />
+                                                    <span className="text-lg">Core Loan Details</span>
+                                                </div>
+                                                <button
+                                                    onClick={handleAutoReset}
+                                                    className="flex items-center gap-1.5 text-xs font-black text-[#f5a669] hover:bg-[#f5a669] hover:text-white transition-all uppercase tracking-widest bg-[var(--bg-input)] px-3 py-1 rounded-lg border border-[var(--border-main)] hover:border-[#f5a669]"
+                                                >
+                                                    <RotateCcw className="w-3 h-3" />
+                                                    Reset
+                                                </button>
                                             </div>
-                                            <span className="font-black text-sm text-[var(--accent)]">{formatCurrencyWithCents(autoTotalPrincipalPaid)}</span>
+
+                                            <SliderInput label="Auto Price" value={autoPrice} onChange={setAutoPrice} min={1000} max={200000} step={500} prefix="$" />
+                                            <SliderInput label={`Down Payment (${autoPrice > 0 ? ((autoDownPayment / autoPrice) * 100).toFixed(1) : 0}%)`} value={autoDownPayment} onChange={(val: number) => setAutoDownPayment(Math.round(val))} min={0} max={autoPrice} step={100} prefix="$" />
+
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <SliderInput label="Loan Term" value={autoLoanTerm} onChange={setAutoLoanTerm} min={12} max={96} step={12} suffix="Mos" widthClass="w-28" />
+                                                <SliderInput label="Interest Rate" value={autoInterestRate} onChange={setAutoInterestRate} min={1} max={20} step={0.1} suffix="%" widthClass="w-28" />
+                                            </div>
+                                        </section>
+
+                                        <section className="space-y-3 bg-[var(--bg-card)] p-5 rounded-2xl border border-[var(--border-main)] shadow-[var(--card-shadow)] flex flex-col">
+                                            <div className="flex items-center gap-2 text-[var(--text-muted)] font-headline font-bold mb-2">
+                                                <Wallet className="w-5 h-5" />
+                                                <span className="text-lg">Trade-in & Fees</span>
+                                            </div>
+                                            <div className="flex flex-col gap-4 flex-1 justify-around">
+                                                <SliderInput label="Trade-in Value" value={autoTradeInValue} onChange={setAutoTradeInValue} min={0} max={100000} step={500} prefix="$" />
+                                                <SliderInput label="Owed on Trade-in" value={autoAmountOwed} onChange={setAutoAmountOwed} min={0} max={100000} step={500} prefix="$" />
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                    <SliderInput label="Sales Tax" value={autoSalesTax} onChange={setAutoSalesTax} min={0} max={15} step={0.1} suffix="%" widthClass="w-24" />
+                                                    <SliderInput label="Reg. Fees" value={autoRegistrationFees} onChange={setAutoRegistrationFees} min={0} max={5000} step={50} prefix="$" widthClass="w-24" />
+                                                </div>
+                                                <SliderInput label="Est. Monthly Insurance" value={autoInsurance} onChange={setAutoInsurance} min={0} max={1000} step={10} prefix="$" />
+                                            </div>
+                                        </section>
+
+                                        <div className="bg-[var(--bg-card)] p-5 rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-main)] flex flex-col justify-between">
+                                            <div className="text-center">
+                                                <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] mb-1 block">Monthly Payment</span>
+                                                <div className="text-4xl font-extrabold text-[var(--accent)] font-headline tracking-tighter">
+                                                    {autoDollars}<span className="text-xl opacity-60">.{autoCents}</span>
+                                                </div>
+                                                <p className="text-[var(--text-muted)] text-[10px] font-bold">Total monthly commitment</p>
+                                            </div>
+
+                                            <DonutChart principal={autoPrincipal} principalAndInterest={autoMonthlyPrincipalAndInterest} taxesAndFees={autoInsurance} />
+
+                                            <div className="space-y-1.5 mt-2">
+                                                <div className="flex items-center justify-between p-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-main)]">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-3 h-3 rounded-full bg-[var(--accent)]"></div>
+                                                        <span className="text-xs font-bold text-[var(--text-main)]">Principal & Interest</span>
+                                                    </div>
+                                                    <span className="font-black text-sm text-[var(--accent)]">{formatCurrencyWithCents(autoMonthlyPrincipalAndInterest)}</span>
+                                                </div>
+                                                <div className="flex items-center justify-between p-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-main)]">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-3 h-3 rounded-full bg-[var(--text-muted)] opacity-50"></div>
+                                                        <span className="text-xs font-bold text-[var(--text-main)]">Insurance</span>
+                                                    </div>
+                                                    <span className="font-black text-sm text-[var(--text-muted)]">{formatCurrencyWithCents(autoInsurance)}</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="flex items-center justify-between p-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-main)]">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-3 h-3 rounded-full bg-rose-500"></div>
-                                                <span className="text-xs font-bold text-[var(--text-main)]">Total Interest</span>
+
+                                        <div className="bg-[var(--bg-card)] p-5 rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-main)] flex flex-col justify-between">
+                                            <div className="text-center">
+                                                <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] mb-1 block">Lifetime Cost</span>
+                                                <div className="text-2xl font-extrabold text-[var(--text-main)] font-headline tracking-tighter">
+                                                    {formatCurrencyWithCents(autoTotalPrincipalPaid + autoTotalInterestPaid)}
+                                                </div>
+                                                <p className="text-[var(--text-muted)] text-[10px] font-bold">Total over {autoLoanTerm} months at {autoInterestRate}%</p>
                                             </div>
-                                            <span className="font-black text-sm text-rose-500">{formatCurrencyWithCents(autoTotalInterestPaid)}</span>
+
+                                            <TotalCostDonutChart principal={autoTotalPrincipalPaid} totalInterest={autoTotalInterestPaid} />
+
+                                            <div className="space-y-1.5 mt-2">
+                                                <div className="flex items-center justify-between p-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-main)]">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-3 h-3 rounded-full bg-[var(--accent)]"></div>
+                                                        <span className="text-xs font-bold text-[var(--text-main)]">Total Principal</span>
+                                                    </div>
+                                                    <span className="font-black text-sm text-[var(--accent)]">{formatCurrencyWithCents(autoTotalPrincipalPaid)}</span>
+                                                </div>
+                                                <div className="flex items-center justify-between p-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-main)]">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-3 h-3 rounded-full bg-rose-500"></div>
+                                                        <span className="text-xs font-bold text-[var(--text-main)]">Total Interest</span>
+                                                    </div>
+                                                    <span className="font-black text-sm text-rose-500">{formatCurrencyWithCents(autoTotalInterestPaid)}</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                            <AmortizationTable 
-                                schedule={autoAmortizationSchedule}
-                                extraPayments={autoExtraPayments}
-                                setExtraPayments={setAutoExtraPayments}
-                                showAll={showAllAutoPayments}
-                                setShowAll={setShowAllAutoPayments}
-                                numberOfPayments={autoNumberOfPayments}
-                                formatMonthYear={formatMonthYear}
-                                formatCurrencyWithCents={formatCurrencyWithCents}
-                            />
+                                    <AmortizationTable
+                                        schedule={autoAmortizationSchedule}
+                                        extraPayments={autoExtraPayments}
+                                        setExtraPayments={setAutoExtraPayments}
+                                        showAll={showAllAutoPayments}
+                                        setShowAll={setShowAllAutoPayments}
+                                        numberOfPayments={autoNumberOfPayments}
+                                        formatMonthYear={formatMonthYear}
+                                        formatCurrencyWithCents={formatCurrencyWithCents}
+                                    />
 
-                            <div className="mt-12 mb-8 max-w-3xl mx-auto w-full">
-                                <h3 className="text-lg font-black font-headline text-[var(--text-main)] mb-6 text-center">Frequently Asked Questions</h3>
-                                <FAQItem 
-                                    question="How do I use the auto loan calculator?" 
-                                    answer="Enter the vehicle price and adjust your down payment. You can also input your trade-in value, how much you still owe on it, and local sales tax and registration fees. The calculator instantly shows your estimated monthly car payment."
-                                />
-                                <FAQItem 
-                                    question="How does my trade-in affect the loan?" 
-                                    answer="If your trade-in is worth more than you owe on it, the difference (trade-in equity) is applied as a credit towards your new vehicle. This reduces the total amount you need to borrow and can lower your sales tax in many states."
-                                />
-                                <FAQItem 
-                                    question="Should I include insurance in my calculation?" 
-                                    answer="While insurance is not part of the auto loan itself, it is a required monthly cost of owning a vehicle. Including an estimate helps you understand the true monthly commitment of your purchase."
-                                />
-                            </div>
-                        </>
-                    )}
+                                    <div className="mt-12 mb-8 max-w-3xl mx-auto w-full">
+                                        <h3 className="text-lg font-black font-headline text-[var(--text-main)] mb-6 text-center">Frequently Asked Questions</h3>
+                                        <FAQItem
+                                            question="How do I use the auto loan calculator?"
+                                            answer="Enter the vehicle price and adjust your down payment. You can also input your trade-in value, how much you still owe on it, and local sales tax and registration fees. The calculator instantly shows your estimated monthly car payment."
+                                        />
+                                        <FAQItem
+                                            question="How does my trade-in affect the loan?"
+                                            answer="If your trade-in is worth more than you owe on it, the difference (trade-in equity) is applied as a credit towards your new vehicle. This reduces the total amount you need to borrow and can lower your sales tax in many states."
+                                        />
+                                        <FAQItem
+                                            question="Should I include insurance in my calculation?"
+                                            answer="While insurance is not part of the auto loan itself, it is a required monthly cost of owning a vehicle. Including an estimate helps you understand the true monthly commitment of your purchase."
+                                        />
+                                    </div>
+                                </>
+                            )}
                         </>
                     )}
                 </main>
@@ -911,7 +917,7 @@ export default function App() {
                 </footer>
             </div>
 
-            <nav className="md:hidden fixed bottom-0 left-0 w-full bg-[var(--bg-card)] border-t border-[var(--border-main)] flex justify-around p-3 z-50 shadow-lg">
+            <nav className="hidden fixed bottom-0 left-0 w-full bg-[var(--bg-card)] border-t border-[var(--border-main)] flex justify-around p-3 z-50 shadow-lg">
                 <button className="flex flex-col items-center gap-0.5 text-[var(--text-muted)]">
                     <LayoutDashboard className="w-6 h-6" />
                     <span className="text-[10px] font-black uppercase">Home</span>
