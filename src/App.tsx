@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Bell, Home, Landmark, ChevronUp, Download, LayoutDashboard, Calculator, Wallet, User, Menu, X, RotateCcw, Sun, Moon, Car } from 'lucide-react';
+import PrivacyPolicy from './Privacy';
+import TermsOfService from './Terms';
 
 function SliderInput({ label, value, onChange, min, max, step = 1, prefix, suffix, widthClass = "w-40" }: any) {
     const [inputValue, setInputValue] = useState(value.toLocaleString());
@@ -284,6 +286,7 @@ function usePersistentState<T>(key: string, defaultValue: T): [T, React.Dispatch
 }
 
 export default function App() {
+    const [path] = useState(window.location.pathname);
     const [theme, setTheme] = useState(() => {
         const saved = localStorage.getItem('theme');
         if (saved) return saved;
@@ -306,7 +309,13 @@ export default function App() {
         let title = "";
         let description = "";
 
-        if (activeTab === 'mortgage') {
+        if (path === '/privacy') {
+            title = "Privacy Policy | Better Calculators";
+            description = "Privacy Policy for Better Calculators.";
+        } else if (path === '/terms') {
+            title = "Terms of Service | Better Calculators";
+            description = "Terms of Service for Better Calculators.";
+        } else if (activeTab === 'mortgage') {
             title = "Better Mortgage Calculator | Instant Monthly Payment Estimates";
             description = "Use the Better Mortgage Calculator to instantly see your estimated monthly mortgage payments with no input required. Fast, simple, and accurate home loan insights.";
         } else {
@@ -581,6 +590,12 @@ export default function App() {
 
             <div className="flex flex-col max-w-[1200px] mx-auto">
                 <main className="flex-1 p-6 lg:p-8 overflow-y-auto">
+                    {path === '/privacy' ? (
+                        <PrivacyPolicy />
+                    ) : path === '/terms' ? (
+                        <TermsOfService />
+                    ) : (
+                        <>
                     <div className="mb-6">
                         <h1 className="sr-only">
                             {activeTab === 'mortgage' ? 'Better Mortgage Calculator' : 'Better Auto Loan Calculator'}
@@ -737,7 +752,7 @@ export default function App() {
                         />
 
                         <div className="mt-12 mb-8 max-w-3xl mx-auto w-full">
-                            <h3 className="text-xl font-black font-headline text-[var(--text-main)] mb-6 text-center">Frequently Asked Questions</h3>
+                            <h3 className="text-lg font-black font-headline text-[var(--text-main)] mb-6 text-center">Frequently Asked Questions</h3>
                             <FAQItem 
                                 question="How do I use this mortgage calculator?" 
                                 answer="Simply adjust the Home Price, Down Payment, Loan Term, and Interest Rate using the sliders. The calculator automatically estimates your monthly principal and interest. You can also add property taxes, insurance, and HOA fees for a more accurate total monthly commitment."
@@ -867,7 +882,7 @@ export default function App() {
                             />
 
                             <div className="mt-12 mb-8 max-w-3xl mx-auto w-full">
-                                <h3 className="text-xl font-black font-headline text-[var(--text-main)] mb-6 text-center">Frequently Asked Questions</h3>
+                                <h3 className="text-lg font-black font-headline text-[var(--text-main)] mb-6 text-center">Frequently Asked Questions</h3>
                                 <FAQItem 
                                     question="How do I use the auto loan calculator?" 
                                     answer="Enter the vehicle price and adjust your down payment. You can also input your trade-in value, how much you still owe on it, and local sales tax and registration fees. The calculator instantly shows your estimated monthly car payment."
@@ -883,13 +898,14 @@ export default function App() {
                             </div>
                         </>
                     )}
+                        </>
+                    )}
                 </main>
 
                 <footer className="w-full mt-12 py-8 border-t border-[var(--border-main)] text-center text-xs text-[var(--text-muted)] font-medium">
                     <div className="flex justify-center gap-6 mb-4">
                         <a href="/privacy" className="hover:text-[var(--accent)] transition-colors">Privacy Policy</a>
                         <a href="/terms" className="hover:text-[var(--accent)] transition-colors">Terms of Service</a>
-                        <a href="/contact" className="hover:text-[var(--accent)] transition-colors">Contact Us</a>
                     </div>
                     <p>&copy; {new Date().getFullYear()} Better Calculators. All rights reserved.</p>
                 </footer>
