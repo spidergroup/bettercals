@@ -82,12 +82,7 @@ Page Body (max-width 1200px, centered)
     │   Columns: Period | Date | Starting | Payment | Principal | Interest | Extra | Total Principal | Total Interest | Balance
     └── "View All N Payments" link
 
-Mobile Bottom Navigation (md:hidden)
-├── Home
-├── Calc (active)
-├── Loans
-└── Profile
-```
+
 
 ---
 
@@ -159,7 +154,7 @@ Mobile Bottom Navigation (md:hidden)
 ### 6.5 Navigation
 
 - **Desktop:** Horizontal top navigation with three calculator links (Mortgage, Dividend, Car Loan). Active link has emerald text + bottom border.
-- **Mobile:** Fixed bottom navigation bar with four items (Home, Calc, Loans, Profile) using Material Symbols icons. Active item highlighted in emerald.
+
 
 ### 6.6 Header
 

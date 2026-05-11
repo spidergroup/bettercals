@@ -538,7 +538,7 @@ export default function App() {
     const [autoDollars, autoCents] = formatCurrencyWithCents(autoTotalMonthlyPayment).split('.');
 
     return (
-        <div className="bg-[var(--bg-main)] text-[var(--text-main)] min-h-screen font-body pb-20 md:pb-0 transition-colors duration-300">
+        <div className="bg-[var(--bg-main)] text-[var(--text-main)] min-h-screen font-body transition-colors duration-300">
             <header className="w-full top-0 sticky z-50 bg-[var(--bg-header)] backdrop-blur-md flex justify-between items-center px-8 py-3 border-b border-[var(--border-main)]">
                 <div className="flex items-center gap-8">
                     <a className="flex items-center gap-2 group transition-transform hover:scale-105 active:scale-95" href="/">
@@ -911,24 +911,7 @@ export default function App() {
                 </footer>
             </div>
 
-            <nav className="md:hidden fixed bottom-0 left-0 w-full bg-[var(--bg-card)] border-t border-[var(--border-main)] flex justify-around p-3 z-50 shadow-lg">
-                <button className="flex flex-col items-center gap-0.5 text-[var(--text-muted)]">
-                    <LayoutDashboard className="w-6 h-6" />
-                    <span className="text-[10px] font-black uppercase">Home</span>
-                </button>
-                <button className="flex flex-col items-center gap-0.5 text-[var(--accent)]">
-                    <Calculator className="w-6 h-6" />
-                    <span className="text-[10px] font-black uppercase">Calc</span>
-                </button>
-                <button className="flex flex-col items-center gap-0.5 text-[var(--text-muted)]">
-                    <Wallet className="w-6 h-6" />
-                    <span className="text-[10px] font-black uppercase">Loans</span>
-                </button>
-                <button className="flex flex-col items-center gap-0.5 text-[var(--text-muted)]">
-                    <User className="w-6 h-6" />
-                    <span className="text-[10px] font-black uppercase">Profile</span>
-                </button>
-            </nav>
+
         </div>
     );
 }
