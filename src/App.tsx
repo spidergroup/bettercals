@@ -261,19 +261,30 @@ export default function App() {
     }, [theme]);
 
     React.useEffect(() => {
+        let title = "";
+        let description = "";
+
         if (activeTab === 'mortgage') {
-            document.title = "Better Mortgage Calculator | Instant Monthly Payment Estimates";
-            const metaDescription = document.querySelector('meta[name="description"]');
-            if (metaDescription) {
-                metaDescription.setAttribute('content', "Use the Better Mortgage Calculator to instantly see your estimated monthly mortgage payments with no input required. Fast, simple, and accurate home loan insights.");
-            }
+            title = "Better Mortgage Calculator | Instant Monthly Payment Estimates";
+            description = "Use the Better Mortgage Calculator to instantly see your estimated monthly mortgage payments with no input required. Fast, simple, and accurate home loan insights.";
         } else {
-            document.title = "Better Auto Loan Calculator | Fast car payment insights";
-            const metaDescription = document.querySelector('meta[name="description"]');
-            if (metaDescription) {
-                metaDescription.setAttribute('content', "Estimate your monthly car payments with the Better Auto Loan Calculator. Enter your vehicle price and loan terms for fast, accurate auto financing insights.");
-            }
+            title = "Better Auto Loan Calculator | Instant Monthly Car Payment Estimates";
+            description = "Estimate your monthly car payments with the Better Auto Loan Calculator. Enter your vehicle price and loan terms for fast, accurate auto financing insights.";
         }
+
+        document.title = title;
+        
+        const updateMeta = (selector: string, content: string) => {
+            const el = document.querySelector(selector);
+            if (el) el.setAttribute('content', content);
+        };
+
+        updateMeta('meta[name="description"]', description);
+        updateMeta('meta[property="og:title"]', title);
+        updateMeta('meta[property="og:description"]', description);
+        updateMeta('meta[name="twitter:title"]', title);
+        updateMeta('meta[name="twitter:description"]', description);
+
     }, [activeTab]);
 
     const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
@@ -531,11 +542,14 @@ export default function App() {
             <div className="flex flex-col max-w-[1200px] mx-auto">
                 <main className="flex-1 p-6 lg:p-8 overflow-y-auto">
                     <div className="mb-6">
-                        <h1 className="text-sm font-bold text-[var(--text-muted)] font-label">
+                        <h1 className="sr-only">
+                            {activeTab === 'mortgage' ? 'Better Mortgage Calculator' : 'Better Auto Loan Calculator'}
+                        </h1>
+                        <p className="text-sm font-bold text-[var(--text-muted)] font-label">
                             {activeTab === 'mortgage' 
                                 ? "Better Mortgage Calculator is an easy-to-use, smarter tool that lets you instantly see your estimated monthly mortgage payments—no input required. Get quick, accurate insights and plan your home financing with confidence in seconds."
                                 : "Estimate your monthly car payments instantly with the Better Auto Loan Calculator. Simply enter your vehicle price, trade-in value, and financing terms to calculate exactly how much you will pay each month and over the total life of your auto loan. Plan your next vehicle purchase with confidence."}
-                        </h1>
+                        </p>
                     </div>
 
                     {activeTab === 'mortgage' && (
