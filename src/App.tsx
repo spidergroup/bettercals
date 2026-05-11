@@ -613,6 +613,7 @@ export default function App() {
                                 </p>
                     </div>
 
+
                     {activeTab === 'mortgage' && (
                         <>
                             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
