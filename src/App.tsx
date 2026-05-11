@@ -601,10 +601,16 @@ export default function App() {
                             {activeTab === 'mortgage' ? 'Better Mortgage Calculator' : 'Better Auto Loan Calculator'}
                         </h1>
                         <p className="text-sm font-bold text-[var(--text-muted)] font-label">
-                            {activeTab === 'mortgage' 
-                                ? "Better Mortgage Calculator is an easy-to-use, smarter tool that lets you instantly see your estimated monthly mortgage payments—no input required. Get quick, accurate insights and plan your home financing with confidence in seconds."
-                                : "Estimate your monthly car payments instantly with the Better Auto Loan Calculator. Simply enter your vehicle price, trade-in value, and financing terms to calculate exactly how much you will pay each month and over the total life of your auto loan. Plan your next vehicle purchase with confidence."}
-                        </p>
+                                    {activeTab === 'mortgage' ? (
+                                        <>
+                                            <strong className="font-black text-[var(--text-main)]">Better Mortgage Calculator</strong> is an easy-to-use, smarter tool that lets you instantly see your estimated monthly mortgage payments—no input required. Get quick, accurate insights and plan your home financing with confidence in seconds.
+                                        </>
+                                    ) : (
+                                        <>
+                                            <strong className="font-black text-[var(--text-main)]">Better Auto Loan Calculator:</strong> Instantly estimate your monthly car loan payments and explore your auto financing options. Simply enter your vehicle price, down payment, trade-in value, and interest rate to calculate exactly how much you will pay each month and over the total life of your loan. Plan your next vehicle purchase with confidence and stay within your budget.
+                                        </>
+                                    )}
+                                </p>
                     </div>
 
                     {activeTab === 'mortgage' && (
