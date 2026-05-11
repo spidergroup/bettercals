@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Bell, Home, Landmark, ChevronUp, Download, LayoutDashboard, Calculator, Wallet, User, Menu, X, RotateCcw, Sun, Moon } from 'lucide-react';
+import { Bell, Home, Landmark, ChevronUp, Download, LayoutDashboard, Calculator, Wallet, User, Menu, X, RotateCcw, Sun, Moon, Car } from 'lucide-react';
 
 function SliderInput({ label, value, onChange, min, max, step = 1, prefix, suffix, widthClass = "w-40" }: any) {
     const [inputValue, setInputValue] = useState(value.toLocaleString());
@@ -165,6 +165,84 @@ const TotalCostDonutChart = ({ principal, totalInterest }: { principal: number, 
     );
 }
 
+const AmortizationTable = ({ schedule, extraPayments, setExtraPayments, showAll, setShowAll, numberOfPayments, formatMonthYear, formatCurrencyWithCents }: any) => {
+    return (
+        <div className="mt-12 border border-[var(--border-main)] shadow-[var(--card-shadow)] p-6 rounded-2xl bg-[var(--bg-card)]">
+            <div className="flex items-center justify-between mb-4">
+                <div>
+                    <h2 className="text-xl font-black font-headline tracking-tight text-[var(--text-main)]">Amortization Schedule</h2>
+                    <p className="text-[var(--text-muted)] text-xs font-medium">Repayment roadmap breakdown</p>
+                </div>
+            </div>
+            <div className="overflow-x-auto rounded-xl border border-[var(--border-main)]">
+                <table className="w-full text-left border-collapse min-w-[1000px]">
+                    <thead>
+                        <tr className="bg-[var(--table-header-bg)] border-b border-[var(--border-main)]">
+                            <th className="px-3 py-3 text-xs font-black text-[var(--table-header-text)] uppercase tracking-widest font-label border-r border-[var(--border-main)]/50 last:border-r-0">Period</th>
+                            <th className="px-3 py-3 text-xs font-black text-[var(--table-header-text)] uppercase tracking-widest font-label border-r border-[var(--border-main)]/50 last:border-r-0">Date</th>
+                            <th className="px-3 py-3 text-xs font-black text-[var(--table-header-text)] uppercase tracking-widest font-label border-r border-[var(--border-main)]/50 last:border-r-0">Starting</th>
+                            <th className="px-3 py-3 text-xs font-black text-[var(--table-header-text)] uppercase tracking-widest font-label border-r border-[var(--border-main)]/50 last:border-r-0">Payment</th>
+                            <th className="px-3 py-3 text-xs font-black text-[var(--table-header-text)] uppercase tracking-widest font-label border-r border-[var(--border-main)]/50 last:border-r-0">Principal</th>
+                            <th className="px-3 py-3 text-xs font-black text-[var(--table-header-text)] uppercase tracking-widest font-label border-r border-[var(--border-main)]/50 last:border-r-0">Interest</th>
+                            <th className="px-3 py-3 text-xs font-black text-[var(--table-header-text)] uppercase tracking-widest font-label border-r border-[var(--border-main)]/50 last:border-r-0">Extra</th>
+                            <th className="px-3 py-3 text-xs font-black text-[var(--table-header-text)] uppercase tracking-widest font-label border-r border-[var(--border-main)]/50 last:border-r-0">Total Principal</th>
+                            <th className="px-3 py-3 text-xs font-black text-[var(--table-header-text)] uppercase tracking-widest font-label border-r border-[var(--border-main)]/50 last:border-r-0 text-center">Total Interest</th>
+                            <th className="px-3 py-3 text-xs font-black text-[var(--table-header-text)] uppercase tracking-widest font-label text-right">Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[var(--border-main)]">
+                        {(showAll ? schedule : schedule.slice(0, 3)).map((row: any) => (
+                            <tr key={row.period} className="hover:bg-[var(--accent)]/5 transition-colors">
+                                <td className="px-3 py-3 font-bold text-sm text-[var(--text-muted)] border-r border-[var(--border-main)] last:border-r-0">{row.period}</td>
+                                <td className="px-3 py-3 font-bold text-sm text-[var(--text-main)] border-r border-[var(--border-main)] last:border-r-0">{formatMonthYear(row.date)}</td>
+                                <td className="px-3 py-3 text-sm text-[var(--text-muted)] border-r border-[var(--border-main)] last:border-r-0">{formatCurrencyWithCents(row.startingBalance)}</td>
+                                <td className="px-3 py-3 font-black text-sm text-[var(--text-main)] border-r border-[var(--border-main)] last:border-r-0">{formatCurrencyWithCents(row.payment)}</td>
+                                <td className="px-3 py-3 text-[var(--table-principal)] font-bold text-sm border-r border-[var(--border-main)] last:border-r-0">{formatCurrencyWithCents(row.principalPayment)}</td>
+                                <td className="px-3 py-3 text-[var(--table-interest)] font-bold text-sm border-r border-[var(--border-main)] last:border-r-0">{formatCurrencyWithCents(row.interestPayment)}</td>
+                                <td className="px-3 py-3 border-r border-[var(--border-main)] last:border-r-0">
+                                    <div className="relative min-w-[80px]">
+                                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold text-xs">$</span>
+                                        <input
+                                            className="w-full pl-5 pr-2 py-1 text-right text-sm font-black text-[var(--text-main)] bg-[var(--bg-input)] border border-[var(--border-main)] rounded-lg focus:ring-1 focus:ring-[var(--accent)]/30 outline-none"
+                                            type="text"
+                                            value={extraPayments[row.period] ?? ""}
+                                            onChange={(e) => {
+                                                const val = e.target.value.replace(/[^0-9.]/g, '');
+                                                if (val === "") {
+                                                    const newExtras = { ...extraPayments };
+                                                    delete newExtras[row.period];
+                                                    setExtraPayments(newExtras);
+                                                    return;
+                                                }
+                                                const num = parseFloat(val);
+                                                if (!isNaN(num)) {
+                                                    setExtraPayments({ ...extraPayments, [row.period]: num });
+                                                }
+                                            }}
+                                            placeholder="0.00"
+                                        />
+                                    </div>
+                                </td>
+                                <td className="px-3 py-3 font-bold text-sm text-[var(--table-principal)] border-r border-[var(--border-main)] last:border-r-0">{formatCurrencyWithCents(row.totalPrincipal)}</td>
+                                <td className="px-3 py-3 font-bold text-sm text-[var(--table-interest)] text-center border-r border-[var(--border-main)] last:border-r-0">{formatCurrencyWithCents(row.totalInterest)}</td>
+                                <td className="px-3 py-3 font-black text-sm text-right text-[var(--text-main)]">{formatCurrencyWithCents(row.endingBalance)}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+            <div className="mt-4 flex justify-center">
+                <button
+                    onClick={() => setShowAll(!showAll)}
+                    className="text-sm font-black text-[var(--accent)] hover:scale-105 transition-all"
+                >
+                    {showAll ? 'Show Less' : `View All ${numberOfPayments} Payments`}
+                </button>
+            </div>
+        </div>
+    );
+};
+
 export default function App() {
     const [theme, setTheme] = useState(() => {
         const saved = localStorage.getItem('theme');
@@ -182,7 +260,25 @@ export default function App() {
         localStorage.setItem('theme', theme);
     }, [theme]);
 
+    React.useEffect(() => {
+        if (activeTab === 'mortgage') {
+            document.title = "Better Mortgage Calculator | Instant Monthly Payment Estimates";
+            const metaDescription = document.querySelector('meta[name="description"]');
+            if (metaDescription) {
+                metaDescription.setAttribute('content', "Use the Better Mortgage Calculator to instantly see your estimated monthly mortgage payments with no input required. Fast, simple, and accurate home loan insights.");
+            }
+        } else {
+            document.title = "Better Auto Loan Calculator | Fast car payment insights";
+            const metaDescription = document.querySelector('meta[name="description"]');
+            if (metaDescription) {
+                metaDescription.setAttribute('content', "Estimate your monthly car payments with the Better Auto Loan Calculator. Enter your vehicle price and loan terms for fast, accurate auto financing insights.");
+            }
+        }
+    }, [activeTab]);
+
     const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
+
+    const [activeTab, setActiveTab] = useState<'mortgage' | 'auto'>('mortgage');
 
     const [homePrice, setHomePrice] = useState(500000);
     const [downPayment, setDownPayment] = useState(100000);
@@ -196,6 +292,19 @@ export default function App() {
     const [showAllPayments, setShowAllPayments] = useState(false);
     const [extraPayments, setExtraPayments] = useState<{ [key: number]: number }>({});
     
+    // Auto Loan States
+    const [autoPrice, setAutoPrice] = useState(40000);
+    const [autoDownPayment, setAutoDownPayment] = useState(8000);
+    const [autoLoanTerm, setAutoLoanTerm] = useState(60);
+    const [autoInterestRate, setAutoInterestRate] = useState(5.0);
+    const [autoTradeInValue, setAutoTradeInValue] = useState(0);
+    const [autoAmountOwed, setAutoAmountOwed] = useState(0);
+    const [autoSalesTax, setAutoSalesTax] = useState(7.0);
+    const [autoRegistrationFees, setAutoRegistrationFees] = useState(2000);
+    const [autoInsurance, setAutoInsurance] = useState(150);
+    const [autoExtraPayments, setAutoExtraPayments] = useState<{ [key: number]: number }>({});
+    const [showAllAutoPayments, setShowAllAutoPayments] = useState(false);
+
     const handleReset = () => {
         setHomePrice(500000);
         setDownPayment(100000);
@@ -206,6 +315,20 @@ export default function App() {
         setHoaFees(0);
         setExtraPayments({});
         setShowAllPayments(false);
+    };
+
+    const handleAutoReset = () => {
+        setAutoPrice(40000);
+        setAutoDownPayment(8000);
+        setAutoLoanTerm(60);
+        setAutoInterestRate(5.0);
+        setAutoTradeInValue(0);
+        setAutoAmountOwed(0);
+        setAutoSalesTax(7.0);
+        setAutoRegistrationFees(2000);
+        setAutoInsurance(150);
+        setAutoExtraPayments({});
+        setShowAllAutoPayments(false);
     };
 
     const principal = Math.max(0, homePrice - downPayment);
@@ -267,6 +390,68 @@ export default function App() {
         return schedule;
     }, [principal, monthlyInterestRate, numberOfPayments, monthlyPrincipalAndInterest, extraPayments]);
 
+    // --- AUTO LOAN CALCULATIONS ---
+    const autoTradeInEquity = autoTradeInValue - autoAmountOwed;
+    const autoTaxableAmount = Math.max(0, autoPrice - autoTradeInValue);
+    const autoSalesTaxAmount = autoTaxableAmount * (autoSalesTax / 100);
+    const autoPrincipal = Math.max(0, autoPrice - autoDownPayment - autoTradeInEquity + autoSalesTaxAmount + autoRegistrationFees);
+    const autoMonthlyInterestRate = autoInterestRate / 100 / 12;
+    const autoNumberOfPayments = autoLoanTerm;
+
+    const autoMonthlyPrincipalAndInterest = useMemo(() => {
+        if (autoMonthlyInterestRate === 0) return autoPrincipal / autoNumberOfPayments;
+        if (autoNumberOfPayments === 0) return 0;
+        return autoPrincipal *
+            (autoMonthlyInterestRate * Math.pow(1 + autoMonthlyInterestRate, autoNumberOfPayments)) /
+            (Math.pow(1 + autoMonthlyInterestRate, autoNumberOfPayments) - 1);
+    }, [autoPrincipal, autoMonthlyInterestRate, autoNumberOfPayments]);
+
+    const autoTotalMonthlyPayment = autoMonthlyPrincipalAndInterest + autoInsurance;
+
+    const autoAmortizationSchedule = useMemo(() => {
+        const schedule = [];
+        let balance = autoPrincipal;
+        let currentDate = new Date();
+        currentDate.setMonth(currentDate.getMonth() + 1);
+
+        let totalInterestAccumulated = 0;
+
+        for (let i = 1; i <= 600; i++) {
+            const interestPayment = balance * autoMonthlyInterestRate;
+            let principalPayment = autoMonthlyPrincipalAndInterest - interestPayment;
+
+            const extraPrincipal = autoExtraPayments[i] || 0;
+            const startingBalance = balance;
+
+            let totalPrincipalForMonth = principalPayment + extraPrincipal;
+            if (totalPrincipalForMonth > balance) {
+                totalPrincipalForMonth = balance;
+                if (principalPayment > balance) principalPayment = balance;
+            }
+
+            balance -= totalPrincipalForMonth;
+            totalInterestAccumulated += interestPayment;
+
+            schedule.push({
+                period: i,
+                date: new Date(currentDate),
+                startingBalance: startingBalance,
+                payment: autoMonthlyPrincipalAndInterest + extraPrincipal,
+                principalPayment: totalPrincipalForMonth,
+                interestPayment,
+                extraPayment: extraPrincipal,
+                totalPrincipal: autoPrincipal - Math.max(0, balance),
+                totalInterest: totalInterestAccumulated,
+                endingBalance: Math.max(0, balance)
+            });
+
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            if (balance <= 0.01) break;
+            if (i >= autoNumberOfPayments) break;
+        }
+        return schedule;
+    }, [autoPrincipal, autoMonthlyInterestRate, autoNumberOfPayments, autoMonthlyPrincipalAndInterest, autoExtraPayments]);
+
     const formatCurrencyWithCents = (value: number) => {
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
@@ -287,6 +472,11 @@ export default function App() {
     const totalInterestPaid = lastScheduleItem ? lastScheduleItem.totalInterest : 0;
     const totalPrincipalPaid = lastScheduleItem ? lastScheduleItem.totalPrincipal : 0;
 
+    const autoLastScheduleItem = autoAmortizationSchedule[autoAmortizationSchedule.length - 1];
+    const autoTotalInterestPaid = autoLastScheduleItem ? autoLastScheduleItem.totalInterest : 0;
+    const autoTotalPrincipalPaid = autoLastScheduleItem ? autoLastScheduleItem.totalPrincipal : 0;
+    const [autoDollars, autoCents] = formatCurrencyWithCents(autoTotalMonthlyPayment).split('.');
+
     return (
         <div className="bg-[var(--bg-main)] text-[var(--text-main)] min-h-screen font-body pb-20 md:pb-0 transition-colors duration-300">
             <header className="w-full top-0 sticky z-50 bg-[var(--bg-header)] backdrop-blur-md flex justify-between items-center px-8 py-3 border-b border-[var(--border-main)]">
@@ -300,7 +490,8 @@ export default function App() {
                         </div>
                     </a>
                     <nav className="hidden md:flex gap-6 items-center">
-                        <a className="text-[var(--accent)] border-b-2 border-[var(--accent)] font-headline tracking-tight font-bold text-base transition-colors py-1" href="#">Better Mortgage Calculator</a>
+                        <button onClick={() => setActiveTab('mortgage')} className={`${activeTab === 'mortgage' ? 'text-[var(--accent)] border-b-2 border-[var(--accent)]' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'} font-headline tracking-tight font-bold text-base transition-colors py-1`}>Better Mortgage Calculator</button>
+                        <button onClick={() => setActiveTab('auto')} className={`${activeTab === 'auto' ? 'text-[var(--accent)] border-b-2 border-[var(--accent)]' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'} font-headline tracking-tight font-bold text-base transition-colors py-1`}>Better Auto Loan Calculator</button>
                     </nav>
                 </div>
                 <div className="flex items-center gap-4">
@@ -331,7 +522,8 @@ export default function App() {
                     </div>
 
                     <nav className="flex flex-col gap-8">
-                        <a className="text-[var(--accent)] font-headline text-2xl font-bold transition-colors" href="#" onClick={() => setIsMenuOpen(false)}>Mortgage Calculator</a>
+                        <button onClick={() => { setActiveTab('mortgage'); setIsMenuOpen(false); }} className={`${activeTab === 'mortgage' ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'} font-headline text-2xl font-bold transition-colors text-left`}>Mortgage Calculator</button>
+                        <button onClick={() => { setActiveTab('auto'); setIsMenuOpen(false); }} className={`${activeTab === 'auto' ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'} font-headline text-2xl font-bold transition-colors text-left`}>Auto Loan Calculator</button>
                     </nav>
                 </div>
             </div>
@@ -340,11 +532,15 @@ export default function App() {
                 <main className="flex-1 p-6 lg:p-8 overflow-y-auto">
                     <div className="mb-6">
                         <h1 className="text-sm font-bold text-[var(--text-muted)] font-label">
-                            Better Mortgage Calculator is an easy-to-use, smarter tool that lets you instantly see your estimated monthly mortgage payments—no input required. Get quick, accurate insights and plan your home financing with confidence in seconds.
+                            {activeTab === 'mortgage' 
+                                ? "Better Mortgage Calculator is an easy-to-use, smarter tool that lets you instantly see your estimated monthly mortgage payments—no input required. Get quick, accurate insights and plan your home financing with confidence in seconds."
+                                : "Estimate your monthly car payments instantly with the Better Auto Loan Calculator. Simply enter your vehicle price, trade-in value, and financing terms to calculate exactly how much you will pay each month and over the total life of your auto loan. Plan your next vehicle purchase with confidence."}
                         </h1>
                     </div>
 
-                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                    {activeTab === 'mortgage' && (
+                        <>
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                         <section className="space-y-3 bg-[var(--bg-card)] p-5 rounded-2xl border border-[var(--border-main)] shadow-[var(--card-shadow)] flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2 text-[var(--accent)] font-headline font-bold">
@@ -475,79 +671,132 @@ export default function App() {
                         </div>
                     </div>
 
-                    <div className="mt-12 border border-[var(--border-main)] shadow-[var(--card-shadow)] p-6 rounded-2xl bg-[var(--bg-card)]">
-                        <div className="flex items-center justify-between mb-4">
-                            <div>
-                                <h2 className="text-xl font-black font-headline tracking-tight text-[var(--text-main)]">Amortization Schedule</h2>
-                                <p className="text-[var(--text-muted)] text-xs font-medium">Repayment roadmap breakdown</p>
+                        <AmortizationTable 
+                            schedule={amortizationSchedule}
+                            extraPayments={extraPayments}
+                            setExtraPayments={setExtraPayments}
+                            showAll={showAllPayments}
+                            setShowAll={setShowAllPayments}
+                            numberOfPayments={numberOfPayments}
+                            formatMonthYear={formatMonthYear}
+                            formatCurrencyWithCents={formatCurrencyWithCents}
+                        />
+                    </>
+                    )}
+
+                    {activeTab === 'auto' && (
+                        <>
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                                <section className="space-y-3 bg-[var(--bg-card)] p-5 rounded-2xl border border-[var(--border-main)] shadow-[var(--card-shadow)] flex flex-col justify-between">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <div className="flex items-center gap-2 text-[var(--accent)] font-headline font-bold">
+                                            <Car className="w-5 h-5" />
+                                            <span className="text-lg">Core Loan Details</span>
+                                        </div>
+                                        <button 
+                                            onClick={handleAutoReset}
+                                            className="flex items-center gap-1.5 text-xs font-black text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors uppercase tracking-widest bg-[var(--bg-input)] px-3 py-1 rounded-lg border border-[var(--border-main)] hover:border-[var(--accent)]/30"
+                                        >
+                                            <RotateCcw className="w-3 h-3" />
+                                            Reset
+                                        </button>
+                                    </div>
+
+                                    <SliderInput label="Auto Price" value={autoPrice} onChange={setAutoPrice} min={1000} max={200000} step={500} prefix="$" />
+                                    <SliderInput label={`Down Payment (${autoPrice > 0 ? ((autoDownPayment / autoPrice) * 100).toFixed(1) : 0}%)`} value={autoDownPayment} onChange={(val: number) => setAutoDownPayment(Math.round(val))} min={0} max={autoPrice} step={100} prefix="$" />
+                                    
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <SliderInput label="Loan Term" value={autoLoanTerm} onChange={setAutoLoanTerm} min={12} max={96} step={12} suffix="Mos" widthClass="w-28" />
+                                        <SliderInput label="Interest Rate" value={autoInterestRate} onChange={setAutoInterestRate} min={1} max={20} step={0.1} suffix="%" widthClass="w-28" />
+                                    </div>
+                                </section>
+
+                                <section className="space-y-3 bg-[var(--bg-card)] p-5 rounded-2xl border border-[var(--border-main)] shadow-[var(--card-shadow)] flex flex-col">
+                                    <div className="flex items-center gap-2 text-[var(--text-muted)] font-headline font-bold mb-2">
+                                        <Wallet className="w-5 h-5" />
+                                        <span className="text-lg">Trade-in & Fees</span>
+                                    </div>
+                                    <div className="flex flex-col gap-4 flex-1 justify-around">
+                                        <SliderInput label="Trade-in Value" value={autoTradeInValue} onChange={setAutoTradeInValue} min={0} max={100000} step={500} prefix="$" />
+                                        <SliderInput label="Owed on Trade-in" value={autoAmountOwed} onChange={setAutoAmountOwed} min={0} max={100000} step={500} prefix="$" />
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <SliderInput label="Sales Tax" value={autoSalesTax} onChange={setAutoSalesTax} min={0} max={15} step={0.1} suffix="%" widthClass="w-24" />
+                                            <SliderInput label="Reg. Fees" value={autoRegistrationFees} onChange={setAutoRegistrationFees} min={0} max={5000} step={50} prefix="$" widthClass="w-24" />
+                                        </div>
+                                        <SliderInput label="Est. Monthly Insurance" value={autoInsurance} onChange={setAutoInsurance} min={0} max={1000} step={10} prefix="$" />
+                                    </div>
+                                </section>
+
+                                <div className="bg-[var(--bg-card)] p-5 rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-main)] flex flex-col justify-between">
+                                    <div className="text-center">
+                                        <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] mb-1 block">Monthly Payment</span>
+                                        <div className="text-4xl font-extrabold text-[var(--accent)] font-headline tracking-tighter">
+                                            {autoDollars}<span className="text-xl opacity-60">.{autoCents}</span>
+                                        </div>
+                                        <p className="text-[var(--text-muted)] text-[10px] font-bold">Total monthly commitment</p>
+                                    </div>
+
+                                    <DonutChart principal={autoPrincipal} principalAndInterest={autoMonthlyPrincipalAndInterest} taxesAndFees={autoInsurance} />
+
+                                    <div className="space-y-1.5 mt-2">
+                                        <div className="flex items-center justify-between p-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-main)]">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-3 h-3 rounded-full bg-[var(--accent)]"></div>
+                                                <span className="text-xs font-bold text-[var(--text-main)]">Principal & Interest</span>
+                                            </div>
+                                            <span className="font-black text-sm text-[var(--accent)]">{formatCurrencyWithCents(autoMonthlyPrincipalAndInterest)}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between p-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-main)]">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-3 h-3 rounded-full bg-[var(--text-muted)] opacity-50"></div>
+                                                <span className="text-xs font-bold text-[var(--text-main)]">Insurance</span>
+                                            </div>
+                                            <span className="font-black text-sm text-[var(--text-muted)]">{formatCurrencyWithCents(autoInsurance)}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-[var(--bg-card)] p-5 rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-main)] flex flex-col justify-between">
+                                    <div className="text-center">
+                                        <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] mb-1 block">Lifetime Cost</span>
+                                        <div className="text-2xl font-extrabold text-[var(--text-main)] font-headline tracking-tighter">
+                                            {formatCurrencyWithCents(autoTotalPrincipalPaid + autoTotalInterestPaid)}
+                                        </div>
+                                        <p className="text-[var(--text-muted)] text-[10px] font-bold">Total over {autoLoanTerm} months at {autoInterestRate}%</p>
+                                    </div>
+
+                                    <TotalCostDonutChart principal={autoTotalPrincipalPaid} totalInterest={autoTotalInterestPaid} />
+
+                                    <div className="space-y-1.5 mt-2">
+                                        <div className="flex items-center justify-between p-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-main)]">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-3 h-3 rounded-full bg-[var(--accent)]"></div>
+                                                <span className="text-xs font-bold text-[var(--text-main)]">Total Principal</span>
+                                            </div>
+                                            <span className="font-black text-sm text-[var(--accent)]">{formatCurrencyWithCents(autoTotalPrincipalPaid)}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between p-2 bg-[var(--bg-input)] rounded-lg border border-[var(--border-main)]">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-3 h-3 rounded-full bg-rose-500"></div>
+                                                <span className="text-xs font-bold text-[var(--text-main)]">Total Interest</span>
+                                            </div>
+                                            <span className="font-black text-sm text-rose-500">{formatCurrencyWithCents(autoTotalInterestPaid)}</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div className="overflow-x-auto rounded-xl border border-[var(--border-main)]">
-                            <table className="w-full text-left border-collapse min-w-[1000px]">
-                                <thead>
-                                    <tr className="bg-[var(--table-header-bg)] border-b border-[var(--border-main)]">
-                                        <th className="px-3 py-3 text-xs font-black text-[var(--table-header-text)] uppercase tracking-widest font-label border-r border-[var(--border-main)]/50 last:border-r-0">Period</th>
-                                        <th className="px-3 py-3 text-xs font-black text-[var(--table-header-text)] uppercase tracking-widest font-label border-r border-[var(--border-main)]/50 last:border-r-0">Date</th>
-                                        <th className="px-3 py-3 text-xs font-black text-[var(--table-header-text)] uppercase tracking-widest font-label border-r border-[var(--border-main)]/50 last:border-r-0">Starting</th>
-                                        <th className="px-3 py-3 text-xs font-black text-[var(--table-header-text)] uppercase tracking-widest font-label border-r border-[var(--border-main)]/50 last:border-r-0">Payment</th>
-                                        <th className="px-3 py-3 text-xs font-black text-[var(--table-header-text)] uppercase tracking-widest font-label border-r border-[var(--border-main)]/50 last:border-r-0">Principal</th>
-                                        <th className="px-3 py-3 text-xs font-black text-[var(--table-header-text)] uppercase tracking-widest font-label border-r border-[var(--border-main)]/50 last:border-r-0">Interest</th>
-                                        <th className="px-3 py-3 text-xs font-black text-[var(--table-header-text)] uppercase tracking-widest font-label border-r border-[var(--border-main)]/50 last:border-r-0">Extra</th>
-                                        <th className="px-3 py-3 text-xs font-black text-[var(--table-header-text)] uppercase tracking-widest font-label border-r border-[var(--border-main)]/50 last:border-r-0">Total Principal</th>
-                                        <th className="px-3 py-3 text-xs font-black text-[var(--table-header-text)] uppercase tracking-widest font-label border-r border-[var(--border-main)]/50 last:border-r-0 text-center">Total Interest</th>
-                                        <th className="px-3 py-3 text-xs font-black text-[var(--table-header-text)] uppercase tracking-widest font-label text-right">Balance</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-[var(--border-main)]">
-                                    {(showAllPayments ? amortizationSchedule : amortizationSchedule.slice(0, 3)).map((row) => (
-                                        <tr key={row.period} className="hover:bg-[var(--accent)]/5 transition-colors">
-                                            <td className="px-3 py-3 font-bold text-sm text-[var(--text-muted)] border-r border-[var(--border-main)] last:border-r-0">{row.period}</td>
-                                            <td className="px-3 py-3 font-bold text-sm text-[var(--text-main)] border-r border-[var(--border-main)] last:border-r-0">{formatMonthYear(row.date)}</td>
-                                            <td className="px-3 py-3 text-sm text-[var(--text-muted)] border-r border-[var(--border-main)] last:border-r-0">{formatCurrencyWithCents(row.startingBalance)}</td>
-                                            <td className="px-3 py-3 font-black text-sm text-[var(--text-main)] border-r border-[var(--border-main)] last:border-r-0">{formatCurrencyWithCents(row.payment)}</td>
-                                            <td className="px-3 py-3 text-[var(--table-principal)] font-bold text-sm border-r border-[var(--border-main)] last:border-r-0">{formatCurrencyWithCents(row.principalPayment)}</td>
-                                            <td className="px-3 py-3 text-[var(--table-interest)] font-bold text-sm border-r border-[var(--border-main)] last:border-r-0">{formatCurrencyWithCents(row.interestPayment)}</td>
-                                            <td className="px-3 py-3 border-r border-[var(--border-main)] last:border-r-0">
-                                                <div className="relative min-w-[80px]">
-                                                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold text-xs">$</span>
-                                                    <input
-                                                        className="w-full pl-5 pr-2 py-1 text-right text-sm font-black text-[var(--text-main)] bg-[var(--bg-input)] border border-[var(--border-main)] rounded-lg focus:ring-1 focus:ring-[var(--accent)]/30 outline-none"
-                                                        type="text"
-                                                        value={extraPayments[row.period] ?? ""}
-                                                        onChange={(e) => {
-                                                            const val = e.target.value.replace(/[^0-9.]/g, '');
-                                                            if (val === "") {
-                                                                const newExtras = { ...extraPayments };
-                                                                delete newExtras[row.period];
-                                                                setExtraPayments(newExtras);
-                                                                return;
-                                                            }
-                                                            const num = parseFloat(val);
-                                                            if (!isNaN(num)) {
-                                                                setExtraPayments(prev => ({ ...prev, [row.period]: num }));
-                                                            }
-                                                        }}
-                                                        placeholder="0.00"
-                                                    />
-                                                </div>
-                                            </td>
-                                            <td className="px-3 py-3 font-bold text-sm text-[var(--table-principal)] border-r border-[var(--border-main)] last:border-r-0">{formatCurrencyWithCents(row.totalPrincipal)}</td>
-                                            <td className="px-3 py-3 font-bold text-sm text-[var(--table-interest)] text-center border-r border-[var(--border-main)] last:border-r-0">{formatCurrencyWithCents(row.totalInterest)}</td>
-                                            <td className="px-3 py-3 font-black text-sm text-right text-[var(--text-main)]">{formatCurrencyWithCents(row.endingBalance)}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="mt-4 flex justify-center">
-                            <button
-                                onClick={() => setShowAllPayments(!showAllPayments)}
-                                className="text-sm font-black text-[var(--accent)] hover:scale-105 transition-all"
-                            >
-                                {showAllPayments ? 'Show Less' : `View All ${numberOfPayments} Payments`}
-                            </button>
-                        </div>
-                    </div>
+                            <AmortizationTable 
+                                schedule={autoAmortizationSchedule}
+                                extraPayments={autoExtraPayments}
+                                setExtraPayments={setAutoExtraPayments}
+                                showAll={showAllAutoPayments}
+                                setShowAll={setShowAllAutoPayments}
+                                numberOfPayments={autoNumberOfPayments}
+                                formatMonthYear={formatMonthYear}
+                                formatCurrencyWithCents={formatCurrencyWithCents}
+                            />
+                        </>
+                    )}
                 </main>
             </div>
 
